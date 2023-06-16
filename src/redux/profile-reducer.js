@@ -1,16 +1,21 @@
 import {profileAPI} from "../api/api";
+import {toggleIsFetchingAC} from "./users-reducer";
+
 
 const ADD_POST = 'ADD-POST';
 const SET_USER_PROFILE = 'SET_USER_PROFILE';
 const SET_STATUS = 'SET_STATUS';
 const DELETE_POST = 'DELETE_POST';
+const ERROR_MESSAGE = "profile/ERROR_MESSAGE";
+
 let initialState = {
     posts: [
         {id: 1, message: "Это первый пост", likesCount: "12"},
         {id: 2, message: "Это второй пост", likesCount: "22"}
     ],
     profile: null,
-    status: ""
+    status: "",
+    error: ''
 }
 
 const profileReducer = (state = initialState, action) => {
@@ -47,6 +52,11 @@ const profileReducer = (state = initialState, action) => {
                 posts: state.posts.filter(p => p.id != action.id)
             }
         }
+        case ERROR_MESSAGE:
+            return {
+                ...state,
+                ...action.payload
+            }
 
         default:
             return state;
@@ -96,5 +106,22 @@ export const updateStatus = (status) => async (dispatch) => {
         dispatch(setStatus(status));
     }
 }
+
+export const saveProfile = (profile) => async (dispatch, getState) => {
+    const userId = getState().auth.userId
+    let response = await profileAPI.saveProfile(profile);
+
+    if (response.data.resultCode === 0) {
+        dispatch(getUserProfile(userId))
+        dispatch(errorAC(""))
+    } else {
+        let serverErrorMessageResponse = response.data.messages[0];
+        dispatch(errorAC(serverErrorMessageResponse))
+        dispatch(getUserProfile(userId))
+        return Promise.reject(serverErrorMessageResponse)
+    }
+}
+
+export const errorAC = (error) => ({type: ERROR_MESSAGE, payload: {error}})
 
 export default profileReducer;

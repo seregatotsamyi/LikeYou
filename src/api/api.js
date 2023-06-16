@@ -28,6 +28,9 @@ export const profileAPI = {
         return instance.put(`profile/status`, {
             status: status
         });
+    },
+    saveProfile(profile){
+        return instance.put(`profile`, profile);
     }
 }
 export const authAPI = {
