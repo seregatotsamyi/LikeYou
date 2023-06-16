@@ -1,6 +1,6 @@
 import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
-import {BrowserRouter, Route, Routes, useParams} from "react-router-dom";
+import {HashRouter , Route, Routes,BrowserRouter, useParams} from "react-router-dom";
 //import DialogsContainer from "./components/Dialogs/DialogsContainer";
 import UsersContainer from "./components/Users/UsersContainer";
 //import ProfileContainer from "./components/Profile/ProfileContainer";
@@ -41,6 +41,7 @@ class App extends React.Component {
                             <div className="main-content">
                                 <Routes>
 
+                                    <Route path="/" element={<Login/>}/>
                                     <Route path="/profile" element={
                                         <Suspense fallback={<div><Preloader/></div>}>
                                             <ProfileContainer isMain={true}/>
@@ -80,11 +81,11 @@ let AppContainer = compose(
     connect(mapStateToProps, {initializeApp})(App)
 )
 let MainApp = (props) => {
-    return <BrowserRouter>
+    return <HashRouter >
         <Provider store={store}>
             <AppContainer/>
         </Provider>
-    </BrowserRouter>
+    </HashRouter>
 }
 
 export default MainApp
